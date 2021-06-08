@@ -39,9 +39,9 @@ def main():
                                                          model_type=model_type,
                                                          show=False, save_keypoints=False, save_out_video=False,
                                                          save_bounding_boxes=False)
-                print('{}, {}'.format(video_path, video_process_time))
+                print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time))
                 with open(output_analysis_path, 'a') as f:
-                    print('{}, {}'.format(os.path.basename(video_path), video_process_time), file=f)
+                    print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time), file=f)
 
     model_type = 'bottom_up'
     output_analysis_path = os.path.join(output_directory, model_type + '.txt')
@@ -60,9 +60,9 @@ def main():
                                                          model_type=model_type,
                                                          show=False, save_keypoints=False, save_out_video=False,
                                                          save_bounding_boxes=False)
-                print('{}, {}'.format(os.path.basename(video_path), video_process_time))
+                print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time))
                 with open(output_analysis_path, 'a') as f:
-                    print('{}, {}'.format(video_path, video_process_time), file=f)
+                    print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time), file=f)
 
 
 if __name__ == '__main__':

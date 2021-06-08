@@ -45,10 +45,9 @@ def estimate_pose_movie(det_config, det_checkpoint, pose_config, pose_checkpoint
         video_writer = cv2.VideoWriter(os.path.join(out_video_root, f'vis_{os.path.basename(video_path)}'), fourcc, fps, size)
 
     frame = 0
+    video_process_time = 0
     start_time = time.time()
     full_frames_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
-    video_process_time = 0
 
     while cap.isOpened():
         flag, img = cap.read()
@@ -60,60 +59,10 @@ def estimate_pose_movie(det_config, det_checkpoint, pose_config, pose_checkpoint
                                             return_heatmap, output_layer_names, kpt_thr, true_coordinates, show, save_out_video,
                                             save_keypoints, save_bounding_boxes, movie_nb, model_type)
         frame += 1
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
     cap.release()
-    if show:
-        cv2.destroyAllWindows()
     if save_out_video:
         video_writer.release()
     return video_process_time
-
-
-def estimate_pose_images_sequence(det_config, det_checkpoint, pose_config, pose_checkpoint, images_sequence_array,
-                                  sequence_name, output_directory, keypoint_names, movie_nb=None, device='cuda:0',
-                                  return_heatmap=False, kpt_thr=0.3, bbox_thr=0.3, output_layer_names=None, show=True,
-                                  save_keypoints=True, save_out_video=True, true_coordinates=None,
-                                  save_bounding_boxes=True, model_type='top_down'):
-    video_writer = None
-    model_name = os.path.splitext(os.path.basename(pose_config))[0]
-    if save_keypoints or save_bounding_boxes or save_out_video:
-        out_video_root, output_keypoints_root, output_bbox_root = create_output_directories(output_directory,
-                                                                                            model_type, model_name,
-                                                                                            sequence_name,
-                                                                                            save_out_video,
-                                                                                            save_keypoints,
-                                                                                            save_bounding_boxes)
-
-    det_model = init_detector(det_config, det_checkpoint, device=device)
-    pose_model = init_pose_model(pose_config, pose_checkpoint, device=device)
-    dataset = pose_model.cfg.data['test']['type']
-
-    if save_out_video:
-        fps = 20
-        height, width, _ = cv2.imread(images_sequence_array[0]).shape
-        size = (width, height)
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        output_video_name = sequence_name.split(os.path.sep)[-1] + '.mp4'
-        video_writer = cv2.VideoWriter(os.path.join(out_video_root, output_video_name), fourcc, fps, size)
-
-    frame = 0
-    start_time = time.time()
-    full_frames_count = len(images_sequence_array)
-
-    for img_path in images_sequence_array:
-        img = cv2.imread(img_path)
-        estimate_pose(img, det_model, pose_model, video_writer, frame, start_time, sequence_name, dataset,
-                      keypoint_names, output_keypoints_root, output_bbox_root, full_frames_count, bbox_thr,
-                      return_heatmap, output_layer_names, kpt_thr, true_coordinates, show, save_out_video,
-                      save_keypoints, save_bounding_boxes, movie_nb, model_type)
-        frame += 1
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
-    if show:
-        cv2.destroyAllWindows()
-    if save_out_video:
-        video_writer.release()
 
 
 def process_mmdet_results(mmdet_results, cat_id=0):
@@ -202,10 +151,6 @@ def estimate_pose(img, det_model, pose_model, video_writer, frame, start_time, i
     if true_coordinates:
         mat = scipy.io.loadmat(true_coordinates)
         print_comparison(pose_results, np.array(mat['joints2D']), keypoint_names, frame)
-
-    if show:
-        vis_img_copy = draw_keypoints_on_video(img, pose_results)
-        cv2.imshow('Image', vis_img_copy)
 
     if save_out_video:
         video_writer.write(vis_img)

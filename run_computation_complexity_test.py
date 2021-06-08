@@ -20,7 +20,7 @@ def main():
     det_config = os.path.join(MMPOSE_PATH, 'demo/mmdetection_cfg/faster_rcnn_r50_fpn_1x_coco.py')
     det_checkpoint = 'http://download.openmmlab.com/mmdetection/v2.0/faster_rcnn/faster_rcnn_r50_fpn_1x_coco/faster_rcnn_r50_fpn_1x_coco_20200130-047c8118.pth'
 
-    repetition_count = 1
+    repetition_count = 5
 
     model_type = 'top_down'
     output_analysis_path = os.path.join(output_directory, model_type + '.txt')
@@ -39,9 +39,10 @@ def main():
                                                          model_type=model_type,
                                                          show=False, save_keypoints=False, save_out_video=False,
                                                          save_bounding_boxes=False)
-                print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time))
+                print('{}, {}, {}'.format(os.path.basename(pose_config), os.path.basename(video_path), video_process_time))
                 with open(output_analysis_path, 'a') as f:
-                    print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time), file=f)
+                    print('{}, {}, {}'.format(os.path.basename(pose_config), os.path.basename(video_path), video_process_time),
+                          file=f)
 
     model_type = 'bottom_up'
     output_analysis_path = os.path.join(output_directory, model_type + '.txt')
@@ -60,9 +61,10 @@ def main():
                                                          model_type=model_type,
                                                          show=False, save_keypoints=False, save_out_video=False,
                                                          save_bounding_boxes=False)
-                print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time))
+                print('{}, {}, {}'.format(os.path.basename(pose_config), os.path.basename(video_path), video_process_time))
                 with open(output_analysis_path, 'a') as f:
-                    print('{}, {}, {}'.format(video_path, os.path.basename(pose_config), video_process_time), file=f)
+                    print('{}, {}, {}'.format(os.path.basename(pose_config), os.path.basename(video_path), video_process_time),
+                          file=f)
 
 
 if __name__ == '__main__':

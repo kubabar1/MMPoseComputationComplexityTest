@@ -112,7 +112,7 @@ def estimate_pose(img, det_model, pose_model, video_writer, frame, start_time, i
                   output_layer_names, kpt_thr, true_coordinates, show, save_out_video, save_keypoints,
                   save_bounding_boxes, movie_nb, model_type):
     if model_type == 'top_down':
-        start_inference_time = time.time()
+        start_inference_time = time.perf_counter()
         # test a single image, the resulting box is (x1, y1, x2, y2)
         mmdet_results = inference_detector(det_model, img)
 
@@ -129,15 +129,15 @@ def estimate_pose(img, det_model, pose_model, video_writer, frame, start_time, i
             dataset=dataset,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
-        end_inference_time = time.time()
+        end_inference_time = time.perf_counter()
     else:
-        start_inference_time = time.time()
+        start_inference_time = time.perf_counter()
         pose_results, returned_outputs = inference_bottom_up_pose_model(
             pose_model,
             img,
             return_heatmap=return_heatmap,
             outputs=output_layer_names)
-        end_inference_time = time.time()
+        end_inference_time = time.perf_counter()
     took_time = end_inference_time - start_inference_time
 
     vis_img = vis_pose_result(
